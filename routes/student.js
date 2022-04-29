@@ -6,6 +6,7 @@ const middleware = require("../middleware");
 const multer = require("multer");
 const path = require("path");
 const Faculty = require("../models/faculty.model");
+const xlsx = require("xlsx");
 
 const router = express.Router();
 
@@ -63,6 +64,37 @@ router.route("/getData").get(middleware.checkToken, (req,res)=>{
     if(err) return res.json({err: err});
     if(result == null) return res.json({data: []})
     else return res.json({data: result});
+  });
+});
+
+var storage2 = multer.diskStorage({  
+  destination: (req, file, cb)=>{  
+      cb(null, './uploads');  
+  },  
+  filename: (req, file, cb)=>{  
+      cb(null, file.originalname);  
+  }  
+});  
+
+var upload2 = multer({
+  storage:storage2
+});  
+//https://www.youtube.com/watch?v=1XUJgdFRK2M
+router.route('/uploadfile').post(upload2.single("uploadfile"), (req, res) =>{
+  const wb = xlsx.readFile(req.file.path);
+  console.log(wb.SheetNames);
+  const ws = wb.Sheets["Sheet1"];
+  console.log(ws);
+  const data = xlsx.utils.sheet_to_json(ws);
+  console.log(data);
+  Student.insertMany(
+    data
+  ).then(function(){
+    console.log("Data inserted");
+    res.status(200).json("ok"); // Success
+  }).catch(function(err){
+    console.log(err);
+    res.status(403).json({ msg: err });      // Failure
   });
 });
 

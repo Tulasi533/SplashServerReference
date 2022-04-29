@@ -5,13 +5,15 @@ const Admin = require("../models/admin.model");
 const middleware = require("../middleware");
 const multer = require("multer");
 const path = require("path");
+const xlsx = require("xlsx");
+ 
 
 
 const router = express.Router();
 
 
 //multer configuration
-const storage = multer.diskStorage({
+const storage1 = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./uploads");
   },
@@ -29,8 +31,8 @@ const fileFilter = (req, file, cb) => {
   }
 }
   
-const upload = multer({
-  storage: storage,
+const upload1 = multer({
+  storage: storage1,
   limits: {
     fileSize: 1024 * 1024 * 6,
   },
@@ -39,7 +41,7 @@ const upload = multer({
   
 router
 .route("/add/image")
-.patch(middleware.checkToken, upload.single("img"), (req, res) =>{
+.patch(middleware.checkToken, upload1.single("img"), (req, res) =>{
   Admin.findOneAndUpdate(
     {adminid: req.decoded.adminid},
     {
@@ -58,7 +60,39 @@ router
     }
   );
 });
-  
+
+var storage2 = multer.diskStorage({  
+  destination: (req, file, cb)=>{  
+      cb(null, './uploads');  
+  },  
+  filename: (req, file, cb)=>{  
+      cb(null, file.originalname);  
+  }  
+});  
+
+var upload2 = multer({
+  storage:storage2
+});  
+//https://www.youtube.com/watch?v=1XUJgdFRK2M
+router.route('/uploadfile').post(upload2.single("uploadfile"), (req, res) =>{
+  const wb = xlsx.readFile(req.file.path);
+  console.log(wb.SheetNames);
+  const ws = wb.Sheets["Sheet1"];
+  console.log(ws);
+  const data = xlsx.utils.sheet_to_json(ws);
+  console.log(data);
+  Admin.insertMany(
+    data
+  ).then(function(){
+    console.log("Data inserted");
+    res.status(200).json("ok"); // Success
+  }).catch(function(err){
+    console.log(err);
+    res.status(403).json({ msg: err });      // Failure
+  });
+});
+
+
 
 router.route("/login").post((req, res) => {
   Admin.findOne({ adminid: req.body.adminid }, (err, result) => {
