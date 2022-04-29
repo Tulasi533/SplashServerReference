@@ -137,6 +137,29 @@ router.route("/update/:regno").patch((req, res) => {
   );
 });
 
+router.route("/updateStudent/:regno").patch((req, res) => {
+  console.log(req.params.regno);
+  Student.findOneAndUpdate(
+    { regno: req.params.regno },
+    { $set: { name: req.body.name, email:req.body.email, mobile: req.body.mobile, college: req.body.college, branch: req.body.branch, facultyid: req.body.facultyid} },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Reg No not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "STUDENT DATA successfully updated",
+          regno: req.params.regno,
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+});
+
 router.route("/delete/:regno").delete((req, res) => {
   Student.findOneAndDelete({ regno: req.params.regno }, (err, result) => {
     if (err) return res.status(500).json({ msg: err });
@@ -150,6 +173,14 @@ router.route("/delete/:regno").delete((req, res) => {
 
 router.route("/getAllData").get((req,res)=>{
   Student.find({}, (err, result) =>{
+    if(err) return res.json({err: err});
+    if(result == null) return res.json({data: []})
+    else return res.json({data: result});
+  });
+});
+
+router.route("/getOtherData").get(middleware.checkToken, (req,res)=>{
+  Admin.find({ regno: { $ne: req.decoded.regno }}, (err, result) =>{
     if(err) return res.json({err: err});
     if(result == null) return res.json({data: []})
     else return res.json({data: result});

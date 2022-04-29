@@ -146,6 +146,38 @@ router.route("/getAllData").get((req,res)=>{
   });
 });
 
+
+router.route("/updateFaculty/:facultyid").patch((req, res) => {
+  console.log(req.params.facultyid);
+  Faculty.findOneAndUpdate(
+    { facultyid: req.params.facultyid },
+    { $set: { name: req.body.name, email:req.body.email, mobile: req.body.mobile, college: req.body.college, department: req.body.department, position: req.body.position, qualification: req.body.qualification } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Faculty ID not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "FACULTY DATA successfully updated",
+          facultyid: req.params.facultyid,
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+});
+
+router.route("/getOtherData").get(middleware.checkToken, (req,res)=>{
+  Admin.find({ facultyid: { $ne: req.decoded.facultyid }}, (err, result) =>{
+    if(err) return res.json({err: err});
+    if(result == null) return res.json({data: []})
+    else return res.json({data: result});
+  });
+});
+
 router.route("/getFaculty/:facultyid").get((req, res) => {
   Faculty.find({ facultyid: req.params.facultyid }, (err, result) => {
     if (err) return res.json(err);

@@ -126,6 +126,30 @@ router.route("/update/:adminid").patch((req, res) => {
   );
 });
 
+
+router.route("/updateAdmin/:adminid").patch((req, res) => {
+  console.log(req.params.adminid);
+  Admin.findOneAndUpdate(
+    { adminid: req.params.adminid },
+    { $set: { name: req.body.name, email:req.body.email, mobile: req.body.mobile, college: req.body.college } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Admin ID not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "ADMIN DATA successfully updated",
+          adminid: req.params.adminid,
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+});
+
 router.route("/getData").get(middleware.checkToken, (req,res)=>{
   Admin.findOne({adminid: req.decoded.adminid}, (err, result) =>{
     if(err) return res.json({err: err});
@@ -136,6 +160,14 @@ router.route("/getData").get(middleware.checkToken, (req,res)=>{
 
 router.route("/getAllData").get((req,res)=>{
   Admin.find({}, (err, result) =>{
+    if(err) return res.json({err: err});
+    if(result == null) return res.json({data: []})
+    else return res.json({data: result});
+  });
+});
+
+router.route("/getOtherData").get(middleware.checkToken, (req,res)=>{
+  Admin.find({ adminid: { $ne: req.decoded.adminid }}, (err, result) =>{
     if(err) return res.json({err: err});
     if(result == null) return res.json({data: []})
     else return res.json({data: result});
