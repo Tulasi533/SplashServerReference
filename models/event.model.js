@@ -13,19 +13,19 @@ const Event = Schema({
     required: true,
   },
   regstartdate: {
-    type: String,
+    type: Date,
     required: true,
   },
   regenddate: {
-    type: String,
+    type: Date,
     required: true,
   },
   eventstartdate: {
-    type: String,
+    type: Date,
     required: true
   },
   eventenddate: {
-    type: String,
+    type: Date,
     required: true,
   },
   venue: {

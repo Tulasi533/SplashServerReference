@@ -53,18 +53,24 @@ router.route("/add/coverImage/:id")
 });
 
 router.route("/getUpcomingEvents").get((req, res) => {
+  now = new Date();
+  v = date.format(now, "DD-MMM-YYYY, H:mm");
+  v1 = new Date(v)
   Event.find({
-    regenddate: {$gte: date.format(new Date(), "DD-MMM-YYYY, H:mm")}}, (err, result) => {
+    regenddate: {$gte: v1}}, (err, result) => {
     if (err) return res.json(err);
     return res.json({ data: result, type: "upcoming"});
   });
 });
 
 router.route("/getOngoingEvents").get((req, res) => {
+  now = new Date();
+  v = date.format(now, "DD-MMM-YYYY, H:mm");
+  v1 = new Date(v)
   Event.find({
     $and: [
-      {eventstartdate: {$lt: date.format(new Date(), "DD-MMM-YYYY, H:mm")}},
-      {eventenddate: {$gt: date.format(new Date(), "DD-MMM-YYYY, H:mm")}}
+      {eventstartdate: {$lt: v1}},
+      {eventenddate: {$gt: v1}}
     ]
     }, (err, result) => {
     if (err) return res.json(err);
@@ -73,7 +79,10 @@ router.route("/getOngoingEvents").get((req, res) => {
 });
 
 router.route("/getPastEvents").get((req, res) => {
-  Event.find({eventenddate: {$lt: date.format(new Date(), "DD-MMM-YYYY, H:mm")}}, (err, result) => {
+  now = new Date();
+  v = date.format(now, "DD-MMM-YYYY, H:mm");
+  v1 = new Date(v)
+  Event.find({eventenddate: {$lt: v1}}, (err, result) => {
     if (err) return res.json(err);
     return res.json({ data: result, type: "past" });
   });
@@ -92,10 +101,10 @@ router.route("/addEvent").post(middleware.checkToken, (req, res) => {
     facultyid: req.decoded.facultyid,
     name: req.body.name,
     eligibility: req.body.eligibility,
-    regstartdate: req.body.regstartdate,
-    regenddate: req.body.regenddate,
-    eventstartdate: req.body.eventstartdate,
-    eventenddate: req.body.eventenddate,
+    regstartdate: new Date(req.body.regstartdate),
+    regenddate: new Date(req.body.regenddate),
+    eventstartdate: new Date(req.body.eventstartdate),
+    eventenddate: new Date(req.body.eventenddate),
     venue: req.body.venue,
     discription: req.body.discription,
     scope: req.body.scope,

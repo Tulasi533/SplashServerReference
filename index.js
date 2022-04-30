@@ -79,12 +79,21 @@ t = "17-Apr-2022, 07:29";
 d = new Date(t);
 console.log(d.getDate());
 now = new Date();
-v = date.format(now, "DD-MMM-YYYY, hh:mm");
+v = date.format(now, "DD-MMM-YYYY, H:mm");
 v1 = new Date(v)
 f1 = t < v;
 console.log(f1);
 f = d < v1
 console.log(f);
 console.log(v);
+f2 = "30-April-2022, 16:38"
+console.log(f2 > v)
+f3 = new Date(f2)
+console.log(f3 > v1)
+
+var d = new Date('2022-04-30T00:30:00.000+00:00');
+console.log(d.getUTCHours()); // Hours
+console.log(d.getUTCMinutes());
+console.log(d.getUTCSeconds());
 
 app.listen(port, () => console.log(`Welcome, you are listening to port ${port}`));
