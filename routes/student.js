@@ -146,6 +146,20 @@ router.route("/register").post((req, res) => {
     });
 });
 
+router.route("/checkusername/:regno").get((req, res) => {
+  Student.findOne({ regno: req.params.regno }, (err, result) => {
+    if (err) return res.status(500).json({ msg: err });
+    if (result !== null) {
+      return res.json({
+        Status: true,
+      });
+    } else
+      return res.json({
+        Status: false,
+      });
+  });
+});
+
 router.route("/update/:regno").patch((req, res) => {
   console.log(req.params.regno);
   Student.findOneAndUpdate(

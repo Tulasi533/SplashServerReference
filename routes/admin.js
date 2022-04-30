@@ -116,6 +116,20 @@ router.route("/login").post((req, res) => {
   });
 });
 
+router.route("/checkusername/:adminid").get((req, res) => {
+  Admin.findOne({ adminid: req.params.adminid }, (err, result) => {
+    if (err) return res.status(500).json({ msg: err });
+    if (result !== null) {
+      return res.json({
+        Status: true,
+      });
+    } else
+      return res.json({
+        Status: false,
+      });
+  });
+});
+
 router.route("/register").post((req, res) => {
   console.log("inside the register");
   const admin = new Admin({

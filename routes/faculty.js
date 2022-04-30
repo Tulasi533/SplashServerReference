@@ -107,6 +107,21 @@ router.route("/register").post((req, res) => {
       });
   });
 
+
+router.route("/checkusername/:facultyid").get((req, res) => {
+  Faculty.findOne({ facultyid: req.params.facultyid }, (err, result) => {
+    if (err) return res.status(500).json({ msg: err });
+    if (result !== null) {
+      return res.json({
+        Status: true,
+      });
+    } else
+      return res.json({
+        Status: false,
+      });
+  });
+});
+
 router.route("/update/:facultyid").patch((req, res) => {
     console.log(req.params.facultyid);
     Faculty.findOneAndUpdate(
