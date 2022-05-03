@@ -75,25 +75,56 @@ app.use("/admin", adminRoute);
 
 app.route("/").get((req, res) => res.json("This is my splash API"));
 
-t = "17-Apr-2022, 07:29";
-d = new Date(t);
-console.log(d.getDate());
-now = new Date();
-v = date.format(now, "DD-MMM-YYYY, H:mm");
-v1 = new Date(v)
-f1 = t < v;
-console.log(f1);
-f = d < v1
-console.log(f);
-console.log(v);
-f2 = "30-April-2022, 16:38"
-console.log(f2 > v)
-f3 = new Date(f2)
-console.log(f3 > v1)
+// t = "17-Apr-2022, 07:29";
+// d = new Date(t);
+// console.log(d.getDate());
+// now = new Date();
+// console.log(now)
+// v = date.format(now, "DD-MMM-YYYY, H:mm");
+// v1 = new Date(v)
+// f1 = t < v;
+// console.log(f1);
+// f = d < v1
+// console.log(f);
+// console.log(v);
+// f2 = "30-April-2022, 16:38"
+// console.log(f2 > v)
+// f3 = new Date(f2)
+// console.log(f3 > v1)
+// UtcToIst("2022-05-01T00:30:00.000+00:00")
+// function UtcToIst(d) {
+//   var dateUTC = new Date(d);
+//   var dateUTC = dateUTC.getTime() 
+//   var dateIST = new Date(dateUTC);
+//   //date shifting for IST timezone (+5 hours and 30 minutes)
+//   dateIST.setHours(dateIST.getHours() + 5); 
+//   dateIST.setMinutes(dateIST.getMinutes() + 30);
+//   console.log(dateIST);
+//   date2 = date.format(dateIST, "DD-MMM-YYYY, H:mm");
+//   console.log(date2);
+// }
 
-var d = new Date('2022-04-30T00:30:00.000+00:00');
-console.log(d.getUTCHours()); // Hours
-console.log(d.getUTCMinutes());
-console.log(d.getUTCSeconds());
+// var d = new Date('2022-04-30T00:30:00.000+00:00');
+// console.log(d.getUTCHours()); // Hours
+// console.log(d.getUTCMinutes());
+// console.log(d.getUTCSeconds());
+now = new Date();
+console.log(now);
+v = date.format(now, "DD-MMM-YYYY, H:mm");
+console.log(v);
+
+UtcToIst("2022-05-01T00:30:00.000+00:00")
+function UtcToIst(d) {
+  var dateUTC = new Date(d);
+  v1 = dateUTC.toLocaleString();
+  v2 = new Date(v1);
+  v3 = date.format(v2, "DD-MMM-YYYY, H:mm");
+  v4 = new Date(v3)
+  console.log(v3);
+  console.log(v4);
+
+  
+}
+
 
 app.listen(port, () => console.log(`Welcome, you are listening to port ${port}`));

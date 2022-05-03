@@ -56,6 +56,14 @@ const Faculty = Schema({
     type: Array,
     default: []
   },
+  mystudents: {
+    type: Array,
+    default: []
+  },
+  approvals: {
+    type: Array,
+    default: []
+  },
   img: {
     type: String,
     default: "https://static.thenounproject.com/png/504708-200.png",

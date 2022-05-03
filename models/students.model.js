@@ -46,7 +46,7 @@ const Student = Schema({
   },
   facultyid: {
     type: String,
-    required: true,
+    default: ""
   },
   img: {
     type: String,

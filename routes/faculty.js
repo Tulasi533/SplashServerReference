@@ -2,6 +2,7 @@ const express = require("express");
 const config = require("../config");
 const jwt = require("jsonwebtoken");
 const Faculty = require("../models/faculty.model");
+const Student = require("../models/students.model");
 const middleware = require("../middleware");
 const multer = require("multer");
 const path = require("path");
@@ -121,6 +122,109 @@ router.route("/checkusername/:facultyid").get((req, res) => {
       });
   });
 });
+
+router.route("/getStudents").get(middleware.checkToken, (req, res) => {
+  Student.find({
+    $or: [{facultyid: req.decoded.facultyid}, {facultyid: ""}]
+  },(err, result) =>{
+    if(err) return res.json({err: err});
+    if(result == null) return res.json({data: []})
+    else return res.json({data: result});
+  })
+});
+
+router.route("/getMyStudents").get(middleware.checkToken, (req, res) => {
+  Student.find({facultyid: req.decoded.facultyid}
+  ,(err, result) =>{
+    if(err) return res.json({err: err});
+    if(result == null) return res.json({data: []})
+    else return res.json({data: result});
+  })
+});
+
+router.route("/addStudent/:regno").patch(middleware.checkToken, (req, res) => {
+  Faculty.findOneAndUpdate({facultyid: req.decoded.facultyid},
+    { $push: { mystudents: req.params.regno  } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Faculty ID not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "Student assigned to faculty",
+          facultyid: req.decoded.facultyid,
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+})
+
+router.route("/removeStudent/:regno").patch(middleware.checkToken, (req, res) => {
+  Faculty.findOneAndUpdate({facultyid: req.decoded.facultyid},
+    { $pull: { mystudents: req.params.regno  } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Faculty ID not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "Student removed from faculty",
+          facultyid: req.decoded.facultyid,
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+})
+
+router.route("/addFaculty/:regno").patch(middleware.checkToken, (req, res) => {
+  Student.findOneAndUpdate({regno: req.params.regno},
+    { $set: { facultyid: req.decoded.facultyid  } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Faculty ID not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "Faculty added to student successfully",
+          facultyid: req.decoded.facultyid,
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+})
+
+router.route("/removeFaculty/:regno").patch(middleware.checkToken, (req, res) => {
+  Student.findOneAndUpdate({regno: req.params.regno},
+    { $set: { facultyid: "" } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Faculty ID not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "Faculty removed from student successfully",
+          facultyid: req.decoded.facultyid,
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+})
 
 router.route("/update/:facultyid").patch((req, res) => {
     console.log(req.params.facultyid);
