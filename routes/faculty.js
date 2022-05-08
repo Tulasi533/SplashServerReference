@@ -7,8 +7,10 @@ const middleware = require("../middleware");
 const multer = require("multer");
 const path = require("path");
 const xlsx = require("xlsx");
-
+const date = require("date-and-time");
+const Event = require("../models/event.model");
 const router = express.Router();
+
 
 
 //multer configuration
@@ -133,6 +135,7 @@ router.route("/getStudents").get(middleware.checkToken, (req, res) => {
   })
 });
 
+
 router.route("/getMyStudents").get(middleware.checkToken, (req, res) => {
   Student.find({facultyid: req.decoded.facultyid}
   ,(err, result) =>{
@@ -141,6 +144,73 @@ router.route("/getMyStudents").get(middleware.checkToken, (req, res) => {
     else return res.json({data: result});
   })
 });
+
+router.route("/addEvent/:id").patch(middleware.checkToken, (req, res) => {
+  Faculty.findOneAndUpdate({facultyid: req.decoded.facultyid},
+    { $push: { myevents: req.params.id  } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Faculty ID not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "Event Id added to event listsuccessfully",
+          facultyid: req.decoded.facultyid,
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+});
+
+router.route("/getMyUpcomingEvents").get(middleware.checkToken, (req, res) => {
+  now = new Date();
+  v = date.format(now, "DD-MMM-YYYY, H:mm");
+  v1 = new Date(v);
+  console.log(req.decoded.facultyid);
+  Event.find(
+    {facultyid: req.decoded.facultyid, regenddate: {$gte: v1}},
+    (err, result) => {
+    if (err) {console.log("error"); return res.json(err);}
+    if(result == null) return res.json({data: []});
+    return res.json({ data: result, type: "upcoming"});
+  });
+});
+
+router.route("/getMyOngoingEvents").get(middleware.checkToken, (req, res) => {
+  now = new Date();
+  v = date.format(now, "DD-MMM-YYYY, H:mm");
+  v1 = new Date(v)
+  Event.find(
+    {
+    facultyid: req.decoded.facultyid,
+    $and: [
+      {eventstartdate: {$lt: v1}},
+      {eventenddate: {$gt: v1}}
+    ]
+    }, (err, result) => {
+    if (err) return res.json(err);
+    if(result == null) return res.json({data: []});
+    return res.json({ data: result, type: "ongoing"});
+  });
+});
+
+router.route("/getMyPastEvents").get(middleware.checkToken, (req, res) => {
+  now = new Date();
+  v = date.format(now, "DD-MMM-YYYY, H:mm");
+  v1 = new Date(v)
+  Event.find(
+    
+    {facultyid: req.decoded.facultyid, eventenddate: {$lt: v1}}, (err, result) => {
+    if (err) return res.json(err);
+    if(result == null) return res.json({data: []});
+    return res.json({ data: result, type: "past" });
+  });
+});
+
 
 router.route("/addStudent/:regno").patch(middleware.checkToken, (req, res) => {
   Faculty.findOneAndUpdate({facultyid: req.decoded.facultyid},
