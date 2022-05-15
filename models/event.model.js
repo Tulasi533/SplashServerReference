@@ -52,6 +52,10 @@ const Event = Schema({
     type: String,
     default: "",
   },
+  participants: {
+    type: Array,
+    default: []
+  }
 });
 
 module.exports = mongoose.model("Event", Event);

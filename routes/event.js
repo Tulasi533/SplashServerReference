@@ -95,6 +95,35 @@ router.route("/getAllEvents").get((req, res) => {
   });
 });
 
+router.route("/getEvent/:id").get((req, res) => {
+  Event.find({ _id: req.params.id }, (err, result) => {
+    if (err) return res.json(err);
+    if(result == null) return res.json({data: []})
+    else return res.json({data: result});
+  });
+});
+
+router.route("/addParticipant/:id/:user").patch(middleware.checkToken, (req, res) => {
+  Event.findOneAndUpdate({_id: req.params.id},
+    { $push: { participants: req.params.user  } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Event not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "Faculty added to Participants list",
+          
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+})
+
 router.route("/addEvent").post(middleware.checkToken, (req, res) => {
   console.log("inside the register");
   const event = new Event({

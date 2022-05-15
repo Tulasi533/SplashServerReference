@@ -211,6 +211,28 @@ router.route("/getMyPastEvents").get(middleware.checkToken, (req, res) => {
   });
 });
 
+router.route("/addApproval/:regno/:eventid").patch(middleware.checkToken, (req, res) => {
+  Faculty.findOneAndUpdate({facultyid: req.decoded.facultyid},
+    { $push: {
+      "approvals": req.params.eventid
+    }},
+    (err, result) =>{
+      if(err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Faculty ID not present");
+      if (result != null) {
+        console.log(result);
+        const msg = {
+        msg: "Student approval assigned to faculty",
+        facultyid: req.decoded.facultyid,
+        };
+        return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+})
 
 router.route("/addStudent/:regno").patch(middleware.checkToken, (req, res) => {
   Faculty.findOneAndUpdate({facultyid: req.decoded.facultyid},
