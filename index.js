@@ -47,6 +47,10 @@ const date = require("date-and-time");
     "mobile": "9948678654",
     "email": "anandgona1234@gmail.com",
     "college": "VIT"
+
+    "userid": "18PA1A0533",
+    "place": "1st Prize",
+    "eventid": "627614b07a39fdd5b7e06496"
 */
 // heroku link: https://aqueous-forest-17404.herokuapp.com/
 // mongodb://localhost:27017/AppDB
@@ -72,6 +76,9 @@ app.use("/event", eventRoute);
 
 const adminRoute = require("./routes/admin");
 app.use("/admin", adminRoute);
+
+const winnerRoute = require("./routes/winner");
+app.use("/winner", winnerRoute);
 
 app.route("/").get((req, res) => res.json("This is my splash API"));
 

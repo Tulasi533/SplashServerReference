@@ -150,4 +150,48 @@ router.route("/addEvent").post(middleware.checkToken, (req, res) => {
     });
 });
 
+router.route("/addWinner/:id").patch((req, res) => {
+  Event.findOneAndUpdate({_id: req.params.id},
+    { $push: { winners: {
+      "userid": req.body.userid,
+      "place": req.body.place
+    }  } },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if(result == null) return res.status(403).json("Event ID not present");
+      if (result != null) {
+          console.log(result);
+          const msg = {
+          msg: "Winner added!!",
+          };
+          return res.json(msg);
+      }
+      else{
+          return res.status(403).json("Something went wrong");
+      }
+    }
+  );
+});
+
+router.route("/getWinners").get((req, res) => {
+  results= [];
+  Event.find({winners: {$ne: []}}
+  ,(err, result) =>{
+    if(err) return res.json({err: err});
+    if(result == null) return res.json({data: []})
+    else return res.json({data: result});
+  })
+});
+
+router.route("/delete/:id").delete((req, res) => {
+  Event.findOneAndDelete({ _id: req.params.id }, (err, result) => {
+    if (err) return res.status(500).json({ msg: err });
+    const msg = {
+      msg: "Event deleted",
+      id: req.params.id,
+    };
+    return res.json(msg);
+  });
+});
+
 module.exports = router;

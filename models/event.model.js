@@ -55,6 +55,10 @@ const Event = Schema({
   participants: {
     type: Array,
     default: []
+  },
+  winners: {
+    type: Array,
+    default: []
   }
 });
 
