@@ -77,6 +77,9 @@ app.use("/event", eventRoute);
 const adminRoute = require("./routes/admin");
 app.use("/admin", adminRoute);
 
+const approvalRoute = require("./routes/approval");
+app.use("/approval", approvalRoute);
+
 const winnerRoute = require("./routes/winner");
 app.use("/winner", winnerRoute);
 
